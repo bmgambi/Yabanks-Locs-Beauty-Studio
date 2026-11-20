@@ -4,7 +4,7 @@ import { Section } from './LayoutPrimitives';
 
 const STUDIO_ADDRESS = 'Fagilia, Utawala, Nairobi, opposite ACK St Monica';
 const WHATSAPP_DISPLAY = '0797 624 927';
-const WHATSAPP_HREF = 'https://wa.me/254797624927';
+const WHATSAPP_HREF = 'https://wa.me/254720648628';
 const CALL_DISPLAY = '0768 875 601';
 const CALL_HREF = 'tel:+254768875601';
 const DIRECTIONS_HREF =

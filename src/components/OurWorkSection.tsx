@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import barrelRollImg from '../assets/samples/barrel-roll-updo.svg';
 import classicFauxImg from '../assets/samples/classic-faux-locs.svg';
 import honeyTippedImg from '../assets/samples/honey-tipped-locs.svg';
@@ -48,10 +48,69 @@ const WORK_SAMPLES: WorkSample[] = [
 
 function WorkSampleCard({ sample }: { sample: WorkSample }) {
   const [hasError, setHasError] = useState(false);
+  const [isMobileZoomed, setIsMobileZoomed] = useState(false);
+  const frameRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = frameRef.current;
+    if (!node || typeof window === 'undefined') {
+      return;
+    }
+
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+
+    if (reducedMotionQuery.matches) {
+      setIsMobileZoomed(false);
+      return;
+    }
+
+    let observer: IntersectionObserver | null = null;
+
+    const setupObserver = () => {
+      observer?.disconnect();
+      observer = null;
+
+      if (!mobileQuery.matches || reducedMotionQuery.matches) {
+        setIsMobileZoomed(false);
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            setIsMobileZoomed(entry.isIntersecting);
+          }
+        },
+        {
+          rootMargin: '-12% 0px -12% 0px',
+          threshold: 0.35,
+        },
+      );
+
+      observer.observe(node);
+    };
+
+    setupObserver();
+
+    mobileQuery.addEventListener('change', setupObserver);
+    reducedMotionQuery.addEventListener('change', setupObserver);
+
+    return () => {
+      observer?.disconnect();
+      mobileQuery.removeEventListener('change', setupObserver);
+      reducedMotionQuery.removeEventListener('change', setupObserver);
+    };
+  }, []);
 
   return (
-    <figure className="m-0 flex flex-col gap-2">
-      <div className="aspect-[4/5] w-full overflow-hidden rounded-[6px] border border-line bg-paper dark:border-dark-line dark:bg-[#1E1E1E]">
+    <figure className="group m-0 flex flex-col gap-2">
+      <div
+        ref={frameRef}
+        className={`aspect-[4/5] w-full overflow-hidden rounded-[6px] border border-line bg-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] dark:border-dark-line dark:bg-[#1E1E1E] md:group-hover:scale-[1.02] md:group-hover:border-deep-gold dark:md:group-hover:border-gold ${
+          isMobileZoomed ? 'scale-[1.02] md:scale-100' : 'scale-100'
+        }`}
+      >
         {hasError ? (
           <div
             role="img"
@@ -70,7 +129,9 @@ function WorkSampleCard({ sample }: { sample: WorkSample }) {
             decoding="async"
             referrerPolicy="no-referrer"
             onError={() => setHasError(true)}
-            className="h-full w-full rounded-[6px] object-cover"
+            className={`h-full w-full rounded-[6px] object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:group-hover:scale-[1.08] ${
+              isMobileZoomed ? 'scale-[1.07] md:scale-100' : 'scale-100'
+            }`}
           />
         )}
       </div>

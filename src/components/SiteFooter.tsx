@@ -11,9 +11,8 @@ const DIRECTIONS_HREF =
   'https://www.google.com/maps/search/?api=1&query=Fagilia+Utawala+Nairobi+ACK+St+Monica';
 
 const OPENING_HOURS = [
-  { days: 'Monday to Thursday', hours: '7:30 am to 9 pm' },
-  { days: 'Friday', hours: '8 am to 8:30 pm' },
-  { days: 'Saturday', hours: '9 am to 8 pm' },
+  { days: 'Monday to Friday', hours: '8 am to 9 pm' },
+  { days: 'Saturday', hours: '7:30 am to 10 pm' },
   { days: 'Sunday', hours: '7:30 am to 9 pm' },
 ] as const;
 
